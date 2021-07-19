@@ -1,7 +1,17 @@
 const suplidorCtrl = {};
 
+const articulo_suplidor = require('../models/Suplidor')
 
-suplidorCtrl.getSuplidores = (req, res) => res.json({mensaje: []});
+suplidorCtrl.getSuplidores = async (req, res) => {
+
+    try {
+        const suplidores = await articulo_suplidor.find().lean().exec(); 
+        
+        res.status(200).json({data:suplidores});
+    } catch(err) {
+        res.status(500).json(err);
+    }
+}
 
 suplidorCtrl.createSuplidor = (req, res) => res.json({mensaje: "Suplidor salvado"});
 

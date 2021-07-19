@@ -1,6 +1,6 @@
 const { Schema, model} = require('mongoose');
 
-const articuloSchema = new Schema({
+const articulo = new Schema({
     codigoArticulo: String,
     descripcion: String,
     codigoAlmacen: String,
@@ -9,4 +9,4 @@ const articuloSchema = new Schema({
     precio: Number
 
 });
-module.exports = model('articulo_suplidor', articuloSchema);
+module.exports = model('articulo', articulo,'articulo');

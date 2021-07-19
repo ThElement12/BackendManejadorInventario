@@ -1,7 +1,17 @@
 const ordenCtrl = {};
 
-
-ordenCtrl.getOrdenes = (req, res) => res.json({mensaje: []});
+const orden_compra = require('../models/Orden')
+ordenCtrl.getOrdenes = async (req, res) => {
+    
+    //console.log(movimientos)
+    try {
+        const ordenes = await orden_compra.find().lean().exec(); 
+        
+        res.status(200).json({data:ordenes});
+    } catch(err) {
+        res.status(500).json(err);
+    }
+}
 
 ordenCtrl.createOrden = (req, res) => res.json({mensaje: "Orden salvada"});
 

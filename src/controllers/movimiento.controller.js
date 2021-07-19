@@ -1,7 +1,20 @@
 const movimientoCtrl = {};
 
+const movimiento = require('../models/movimiento')
 
-movimientoCtrl.getMovimientos = (req, res) => res.json({mensaje: []});
+movimientoCtrl.getMovimientos = async (req, res) => {
+    
+    //console.log(movimientos)
+    try {
+        const movimientos = await movimiento.find().lean().exec(); 
+        
+        res.status(200).json({data:movimientos});
+    } catch(err) {
+        res.status(500).json(err);
+    }
+}
+
+
 
 movimientoCtrl.createMovimiento = (req, res) => res.json({mensaje: "Movimiento salvado"});
 

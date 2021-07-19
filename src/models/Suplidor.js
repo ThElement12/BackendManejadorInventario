@@ -1,9 +1,10 @@
 const { Schema, model} = require('mongoose');
 
-const suplidorSchema = new Schema({
+const articulo_suplidor = new Schema({
     codigoArticulo: String,
-    codigoSuplidor: Number,
-    precioCompra: Number,
-    tiempoEntrega: Number
+    codigoSuplidor: String,
+    tiempoEntrega: Number,
+    precioCompra: Number
+    
 });
-module.exports = model('articulo_suplidor', suplidorSchema);
+module.exports = model('articulo_suplidor', articulo_suplidor,'articulo_suplidor');

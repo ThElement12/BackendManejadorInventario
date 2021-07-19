@@ -1,6 +1,6 @@
 const { Schema, model} = require('mongoose');
 
-const OrdenSchema = new Schema({
+const orden_compra = new Schema({
     codigoOrdenCompra: String,
     codigoSuplidor: Number,
     fechaOrden: Date,
@@ -11,4 +11,4 @@ const OrdenSchema = new Schema({
         precioCompra: Number
     }]
 });
-module.exports = model('orden_compra', OrdenSchema);
+module.exports = model('orden_compra', orden_compra,'orden_compra');

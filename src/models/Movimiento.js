@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
 
-const movimientoSchema = new Schema({
-    codigoMovimiento: Number,
+const movimiento = new Schema({
+    codigoMovimiento: String,
     codigoAlmacen: String,
     tipoMovimiento: String,
     codigoArticulo: String,
@@ -9,4 +9,4 @@ const movimientoSchema = new Schema({
     fecha: Date
 });
 
-module.exports = model('movimiento_inventario', movimientoSchema);
+module.exports = model('movimiento', movimiento,'movimiento');
