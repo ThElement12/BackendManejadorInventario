@@ -10,6 +10,13 @@ app.use(cors());
 app.use(express.json());
 
 //routes
-app.get('/', (req, res) => res.send('Users Routes'));
+app.use('/articulo', require('./routes/articulo'));
+app.use('/movimiento', require('./routes/movimiento'));
+app.use('/orden', require('./routes/ordenCompra'));
+app.use('/suplidor', require('./routes/suplidor'));
 
+app.get('/test', (req, res) => {
+    
+    res.send('Users Routes')
+});
 module.exports = app;

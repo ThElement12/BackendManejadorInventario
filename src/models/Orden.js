@@ -2,13 +2,13 @@ const { Schema, model} = require('mongoose');
 
 const OrdenSchema = new Schema({
     codigoOrdenCompra: String,
-    codigoSuplidor: Int32Array,
+    codigoSuplidor: Number,
     fechaOrden: Date,
     articulos: [{
         codigoArticulo: String,
-        cantidadOrdenada: Int32Array,
+        cantidadOrdenada: Number,
         unidadCompra: String,
-        precioCompra: Float32Array
+        precioCompra: Number
     }]
 });
 module.exports = model('orden_compra', OrdenSchema);

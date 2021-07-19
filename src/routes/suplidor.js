@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const router = Router();
 
-const { getSuplidor, getSuplidores, createSuplidor, updateSuplidor, deleteSuplidor} = require('../controllers/suplidor.controllers');
+const { getSuplidor, getSuplidores, createSuplidor, updateSuplidor, deleteSuplidor} = require('../controllers/suplidor.controller');
 
 router.route('/')
     .get(getSuplidores)

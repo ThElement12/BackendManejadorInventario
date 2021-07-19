@@ -1,11 +1,11 @@
 const { Schema, model } = require('mongoose');
 
 const movimientoSchema = new Schema({
-    codigoMovimiento: Int32Array,
+    codigoMovimiento: Number,
     codigoAlmacen: String,
     tipoMovimiento: String,
     codigoArticulo: String,
-    cantidad: Int32Array,
+    cantidad: Number,
     fecha: Date
 });
 

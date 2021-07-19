@@ -4,9 +4,9 @@ const articuloSchema = new Schema({
     codigoArticulo: String,
     descripcion: String,
     codigoAlmacen: String,
-    balanceActual: Int32Array,
+    balanceActual: Number,
     unidadDeCompra: String,
-    precio: Float32Array
+    precio: Number
 
 });
 module.exports = model('articulo_suplidor', articuloSchema);

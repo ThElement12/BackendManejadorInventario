@@ -2,7 +2,7 @@ const { Router } = require('express');
 const router = Router();
 
 
-const { getMovimiento, getMovimientos, createMovimiento, updateMovimiento, deleteMovimiento} = require('../controllers/movimiento.controllers');
+const { getMovimiento, getMovimientos, createMovimiento, updateMovimiento, deleteMovimiento} = require('../controllers/movimiento.controller');
 
 router.route('/')
     .get(getMovimientos)

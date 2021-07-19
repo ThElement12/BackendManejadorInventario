@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const router = Router();
 
-const { getArticulo, getArticulos, createArticulo, updateArticulo, deleteArticulo} = require('../controllers/articulo.controllers');
+const { getArticulo, getArticulos, createArticulo, updateArticulo, deleteArticulo} = require('../controllers/articulo.controller');
 
 router.route('/')
     .get(getArticulos)
