@@ -1,7 +1,10 @@
 const { Schema, model} = require('mongoose');
 
 const orden_compra = new Schema({
-    codigoOrdenCompra: String,
+    codigoOrdenCompra: { 
+        type: String, 
+        unique:true 
+    },
     codigoSuplidor: Number,
     fechaOrden: Date,
     articulos: [{

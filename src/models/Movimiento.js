@@ -1,7 +1,10 @@
 const { Schema, model } = require('mongoose');
 
 const movimiento = new Schema({
-    codigoMovimiento: String,
+    codigoMovimiento: { 
+        type: String, 
+        unique:true 
+    },
     codigoAlmacen: String,
     tipoMovimiento: String,
     codigoArticulo: String,

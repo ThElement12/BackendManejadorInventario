@@ -1,7 +1,10 @@
 const { Schema, model} = require('mongoose');
 
 const articulo = new Schema({
-    codigoArticulo: String,
+    codigoArticulo: { 
+        type: String, 
+        unique:true 
+    },
     descripcion: String,
     codigoAlmacen: String,
     balanceActual: Number,

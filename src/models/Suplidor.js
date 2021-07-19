@@ -2,7 +2,10 @@ const { Schema, model} = require('mongoose');
 
 const articulo_suplidor = new Schema({
     codigoArticulo: String,
-    codigoSuplidor: String,
+    codigoSuplidor: { 
+        type: String, 
+        unique:true 
+    },
     tiempoEntrega: Number,
     precioCompra: Number
     
