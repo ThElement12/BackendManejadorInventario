@@ -3,11 +3,15 @@ const ordenCtrl = {};
 const orden_compra = require('../models/Orden')
 ordenCtrl.getOrdenes = async (req, res) => {
     
-    //console.log(movimientos)
     try {
-        const ordenes = await orden_compra.find().lean().exec(); 
-        
-        res.status(200).json({data:ordenes});
+        const ordenes = await orden_compra.aggregate([
+            {
+                $project:{
+                    _id: 0
+                }
+            }
+        ]); 
+        res.status(200).json(ordenes);
     } catch(err) {
         res.status(500).json(err);
     }
@@ -15,7 +19,25 @@ ordenCtrl.getOrdenes = async (req, res) => {
 
 ordenCtrl.createOrden = (req, res) => res.json({mensaje: "Orden salvada"});
 
-ordenCtrl.getOrden = (req, res) => res.json({mensaje: []});
+ordenCtrl.getOrden = async (req, res) => {
+    try {
+        const orden = await orden_compra.aggregate([
+            {
+                $match: {
+                    codigoOrdenCompra: req.params.id.toUpperCase()
+                }
+            },
+            {
+                $project:{
+                    _id: 0
+                }
+            }
+        ]); 
+        res.status(200).json(orden);
+    } catch(err) {
+        res.status(500).json(err);
+    }
+}
 
 ordenCtrl.updateOrden = (req, res) => res.json({mensaje: "Orden actualizada"});
 

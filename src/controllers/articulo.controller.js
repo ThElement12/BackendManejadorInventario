@@ -5,29 +5,38 @@ const articulo = require('../models/Articulo');
 articuloCtrl.getArticulos = async (req, res) => {
 
     try {
-        const articulos = await articulo.find().lean().exec(); 
+        const articulos = await articulo.aggregate([
+            {
+                $project: {
+                    _id: 0
+                }
+            }
+        ]); 
         
-        res.status(200).json({data:articulos});
+        res.status(200).json(articulos);
     } catch(err) {
         res.status(500).json(err);
     }
 }
-
-
 articuloCtrl.createArticulo = (req, res) =>{
 
     res.json({mensaje: "Articulo salvado"})
     };
 
 articuloCtrl.getArticulo = async (req, res) => {
-    const articulo = await Articulo.aggregate([
+    const resultado = await articulo.aggregate([
         {
             $match: {
-                codigoArticulo: req.params.id
+                codigoArticulo: req.params.id.toUpperCase()
+            }
+        },
+        {
+            $project:{
+                _id: 0
             }
         }
     ])
-    res.json(articulo);
+    res.json(resultado);
 }
 
 articuloCtrl.updateArticulo = (req, res) => res.json({mensaje: "Articulo actualizado"});
