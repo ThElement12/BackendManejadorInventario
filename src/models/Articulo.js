@@ -1,14 +1,12 @@
 const { Schema, model} = require('mongoose');
 
 const articulo = new Schema({
-    codigoArticulo: { 
-        type: String, 
-        unique:true 
-    },
+    codigoArticulo: String,
     descripcion: String,
-    codigoAlmacen: String,
-    balanceActual: Number,
-    unidadDeCompra: String,
+    almacen:[{
+        codigoAlmacen: String,
+        balanceActual: Number
+    }],
     precio: Number
 
 });
