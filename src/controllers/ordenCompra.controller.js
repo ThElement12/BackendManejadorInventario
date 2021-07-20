@@ -1,7 +1,8 @@
 const ordenCtrl = {};
 
-const orden_compra = require('../models/Orden')
+const orden_compra = require('../models/Orden');
 const articulo = require('../models/Articulo');
+//const movimiento = require('../models/Movimiento');
 
 ordenCtrl.getOrdenes = async (req, res) => {
 
@@ -43,11 +44,39 @@ ordenCtrl.createOrden = async (req, res) => {
       aux = suplidorCercano(articulosNecesarios[i].articulo, fecha)
       suplidores.push(aux);
     }
+    var numeroOrden = parseInt(codigoOrden)
 
-    const newOrder = new Orden({
-        codigoOrdenCompra: codigoOrden,
-        codigo
-    })
+    var suplidor = null
+    var articuloSuplidor = []
+    for(i = 0; i < suplidores.length; i++){
+      if(suplidor === null){
+        suplidor = suplidores[i].codigoSuplidor
+      }
+      else if(suplidor !== suplidores[i].codigoSuplidor){
+        const newOrder = new orden_compra({
+          codigoOrdenCompra: codigoOrden,
+          codigoSuplidor: suplidor,
+          fechaOrden: fecha,
+          articulos: articuloSuplidor
+        })
+        await newOrder.save();
+        suplidor = suplidores[i].codigoSuplidor;
+        numeroOrden++;
+        articuloSuplidor = [];
+      }
+      for(j = 0; j < articulosNecesarios.legnth; i++){
+        if(suplidores[i].codigoArticulo === articulosNecesarios[i].codigoArticulo){
+          auxArticulo = {
+            codigoArticulo: articulosNecesarios[i].codigoArticulo,
+            cantidadOrdenada: articulosNecesarios[i].cantidad,
+            precioCompra: articulosNecesarios[i].precio,
+          }
+          articuloSuplidor.push(auxArticulo);
+        }
+      }
+    }
+
+    
 
 
     
@@ -89,7 +118,10 @@ const productosFaltantes = async function (articulos, fecha) {
   const inventario = await articulo.aggregate([
     {
       $group: {
-        _id: "$codigoArticulo",
+        _id: {
+            CD: "$codigoArticulo",
+            precio: "$precio"
+        },
         total: {
           $sum: {
             $sum: "$almacen.balanceActual"
@@ -100,7 +132,8 @@ const productosFaltantes = async function (articulos, fecha) {
     {
       $project: {
         _id: 0,
-        codigoArticulo: "$_id",
+        codigoArticulo: "$_id.CD",
+        precio: "$_id.precio",
         cantidad: "$total"
       }
     }
@@ -158,7 +191,8 @@ const productosFaltantes = async function (articulos, fecha) {
         if (resto < 0) {
           articulosNecesarios.push({
             articulo: aux.codigoProducto,
-            cantidad: resto * -1
+            cantidad: resto * -1,
+            precio: inventario.precio
           })
         }
         break;

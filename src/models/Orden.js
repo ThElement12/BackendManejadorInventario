@@ -10,7 +10,6 @@ const orden_compra = new Schema({
     articulos: [{
         codigoArticulo: String,
         cantidadOrdenada: Number,
-        unidadCompra: String,
         precioCompra: Number
     }]
 });
