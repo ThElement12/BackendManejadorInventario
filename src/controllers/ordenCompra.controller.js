@@ -1,8 +1,10 @@
 const ordenCtrl = {};
+var mongoose = require('mongoose');
+
 
 const orden_compra = require('../models/Orden');
 const articulo = require('../models/Articulo');
-//const movimiento = require('../models/Movimiento');
+const movimiento = mongoose.model('movimiento')
 
 ordenCtrl.getOrdenes = async (req, res) => {
 
