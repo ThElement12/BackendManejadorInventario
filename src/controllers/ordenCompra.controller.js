@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 
 const orden_compra = require('../models/Orden');
 const articulo = require('../models/Articulo');
+const articulo_suplidor = require('../models/Suplidor')
 const movimiento = mongoose.model('movimiento')
 
 ordenCtrl.getOrdenes = async (req, res) => {
@@ -31,57 +32,63 @@ ordenCtrl.createOrden = async (req, res) => {
    *  {codigoProducto, cantidad}
    * ]
    */
-  var { fecha, articulos, codigoOrden } = req.body;
-  fecha = new Date(fecha.slice(0, 10));
+
+  var { fechaOrden, articulos, codigoOrdenCompra } = req.body;
+  fecha = new Date(fechaOrden.slice(0, 10));
   try {
     ///Busca el producto que falta en el inventario
-    var articulosNecesarios = productosFaltantes(articulos, fecha);
+    var articulosNecesarios = await productosFaltantes(articulos, fecha);
     if (articulosNecesarios.length === 0) {
       res.status(200).json({ mensaje: "No necesita orden" });
     }
 
     var suplidores = []
     ///Busca el suplidor que pueda traerlo en la fecha necesaria
-    for(i = 0; i < articulosNecesarios.length; i++){
-      aux = suplidorCercano(articulosNecesarios[i].articulo, fecha)
+    for (i = 0; i < articulosNecesarios.length; i++) {
+      aux = await suplidorCercano(articulosNecesarios[i].articulo, fecha)
       suplidores.push(aux);
     }
-    var numeroOrden = parseInt(codigoOrden)
+    var numeroOrden = parseInt(codigoOrdenCompra)
 
-    var suplidor = null
+    
     var articuloSuplidor = []
-    for(i = 0; i < suplidores.length; i++){
-      if(suplidor === null){
-        suplidor = suplidores[i].codigoSuplidor
-      }
-      else if(suplidor !== suplidores[i].codigoSuplidor){
-        const newOrder = new orden_compra({
-          codigoOrdenCompra: codigoOrden,
-          codigoSuplidor: suplidor,
-          fechaOrden: fecha,
-          articulos: articuloSuplidor
-        })
-        await newOrder.save();
-        suplidor = suplidores[i].codigoSuplidor;
-        numeroOrden++;
-        articuloSuplidor = [];
-      }
-      for(j = 0; j < articulosNecesarios.legnth; i++){
-        if(suplidores[i].codigoArticulo === articulosNecesarios[i].codigoArticulo){
+    var ordenes = []
+    for (i = 0; i < suplidores.length; i++) {
+      var suplidor = null
+      for (j = 0; j < articulosNecesarios.length; j++) {
+        if (suplidor === null) {
+          suplidor = suplidores[i].codigoSuplidor
+        }
+        if (suplidores[i].codigoArticulo === articulosNecesarios[j].articulo) {
           auxArticulo = {
-            codigoArticulo: articulosNecesarios[i].codigoArticulo,
-            cantidadOrdenada: articulosNecesarios[i].cantidad,
-            precioCompra: articulosNecesarios[i].precio,
+            codigoArticulo: articulosNecesarios[j].articulo,
+            cantidadOrdenada: articulosNecesarios[j].cantidad,
+            precioCompra: articulosNecesarios[j].precio,
           }
           articuloSuplidor.push(auxArticulo);
         }
       }
+
+      
+
+        const newOrder = new orden_compra({
+          codigoOrdenCompra: codigoOrdenCompra,
+          codigoSuplidor: suplidor,
+          fechaOrden: fecha,
+          articulos: articuloSuplidor
+        })
+        console.log("hola")
+        await newOrder.save();
+        suplidor = suplidores[i].codigoSuplidor;
+        numeroOrden++;
+        articuloSuplidor = [];
+      
     }
 
-    
 
 
-    
+
+
   } catch (err) {
     console.error(err)
     res.status(500).json(err);
@@ -121,8 +128,8 @@ const productosFaltantes = async function (articulos, fecha) {
     {
       $group: {
         _id: {
-            CD: "$codigoArticulo",
-            precio: "$precio"
+          CD: "$codigoArticulo",
+          precio: "$precio"
         },
         total: {
           $sum: {
@@ -130,7 +137,12 @@ const productosFaltantes = async function (articulos, fecha) {
           }
         }
       }
-    },
+    }, {
+      $sort: {
+        _id: 1
+      }
+    }
+    ,
     {
       $project: {
         _id: 0,
@@ -157,7 +169,12 @@ const productosFaltantes = async function (articulos, fecha) {
           $sum: "$cantidad"
         }
       }
-    },
+    }, {
+      $sort: {
+        _id: 1
+      }
+    }
+    ,
     {
       $project: {
         _id: 0,
@@ -183,18 +200,18 @@ const productosFaltantes = async function (articulos, fecha) {
     }
   ]);
 
-  cantidadDias = Math.round((fecha.getTime() - new Date().getTime())/(1000 * 3600 * 24));
+  cantidadDias = Math.round((fecha.getTime() - new Date().getTime()) / (1000 * 3600 * 24));
 
   for (i = 0; i < articulos.length; i++) {
     var aux = articulos[i];
     for (j = 0; j < inventario.length; j++) {
-      if (aux.codigoProducto === inventario[i].codigoArticulo) {
-        resto = inventario[i].cantidad - aux.cantidad - Math.round((cantidadDias * consumo[i].consumoDiario))
+      if (aux.codigoArticulo === inventario[j].codigoArticulo) {
+        resto = inventario[j].cantidad - aux.cantidad - Math.round((cantidadDias * consumo[j].consumoDiario))
         if (resto < 0) {
           articulosNecesarios.push({
-            articulo: aux.codigoProducto,
+            articulo: aux.codigoArticulo,
             cantidad: resto * -1,
-            precio: inventario.precio
+            precio: inventario[j].precio
           })
         }
         break;
@@ -203,7 +220,7 @@ const productosFaltantes = async function (articulos, fecha) {
   }
   return articulosNecesarios;
 }
-const suplidorCercano = async function(articulo, fecha){
+const suplidorCercano = async function (articulo, fecha) {
   const suplidores = await articulo_suplidor.aggregate([
     {
       $match: {
